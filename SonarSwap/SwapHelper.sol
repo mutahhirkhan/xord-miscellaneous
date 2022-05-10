@@ -62,6 +62,7 @@ contract SwapHelper {
   {
     uint excludeFromFee = address(this).balance - fee;
 
+    // swap tokens
     (bool sent1, bytes memory result) = UNISWAP_V2_ROUTER.call{value: excludeFromFee}(
       abi.encodeWithSignature("swapExactETHForTokens(uint256,address[],address,uint256)", amountOutMin, path, to, deadline)
     );
@@ -69,6 +70,7 @@ contract SwapHelper {
 
     // amounts = pancakeV2Router.swapExactETHForTokens{ value: excludeFromFee }(amountOutMin, path, to, deadline);
     
+    //transfer 0.2% to sonar wallet
     (bool sent2,) = SONAR_WALLET.call{value: fee}("");
     require(sent1 && sent2, "Fail on sonar wallet");
     
@@ -85,6 +87,7 @@ contract SwapHelper {
     address tokenAddress
   ) external returns (uint[] memory amounts)
   {
+    // swap tokens
     (bool sent1, bytes memory result) = UNISWAP_V2_ROUTER.call(
       abi.encodeWithSignature("swapExactTokensForTokens(uint256,uint256,address[],address,uint256)", amountIn, amountOutMin, path, to, deadline)
     );
@@ -94,6 +97,7 @@ contract SwapHelper {
     // (bool sent2,) = tokenAddress.call(abi.encodeWithSignature("transferFrom(address,address,uint)", msg.sender, SONAR_WALLET, fee));
 
     // amounts = pancakeV2Router.swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline);
+    //transfer 0.2% to sonar wallet
     // approval is mandatory first
     IERC20(tokenAddress).transferFrom(msg.sender, SONAR_WALLET, fee);
 
@@ -113,6 +117,7 @@ contract SwapHelper {
       abi.encodeWithSignature("swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256,uint256,address[],address,uint256)", amountIn, amountOutMin, path, to, deadline)
     );
     require(sent1, "Fail on sonar wallet");
+    //transfer 0.2% to sonar wallet
     // approval is mandatory first
     IERC20(tokenAddress).transferFrom(msg.sender, SONAR_WALLET, fee);
     emit SwapExTokForTokAndFee(tokenAddress, msg.sender, to, amountIn, amountOutMin, deadline, fee);
